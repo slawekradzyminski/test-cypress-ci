@@ -20,4 +20,12 @@ describe('Home tests in isolation', () => {
         cy.get('li').should('have.length.at.least', 1)
     })
 
+    it('should display home page - fail demo', () => {
+        // when (testowana akcja)
+        cy.visit('http://localhost:8081')
+
+        // then (asercje)
+        cy.get('li').should('have.length', 1)
+    })
+
 })
