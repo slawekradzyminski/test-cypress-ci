@@ -1,9 +1,10 @@
 /// <reference types="cypress" />
 
 import { getRandomUser } from "../generators/userGenerator"
+import { User } from "../types/user";
 
-let token;
-let user;
+let token: string | undefined;
+let user: User;
 
 describe('Home page tests', () => {
     beforeEach(() => {
@@ -11,7 +12,7 @@ describe('Home page tests', () => {
         cy.register(user)
         cy.login(user.username, user.password)
         cy.getCookie('token').then((cookie) => {
-            token = cookie.value
+            token = cookie?.value
         })
         cy.get('li').contains(`${user.firstName} ${user.lastName}`).find('.edit').click()
     })
