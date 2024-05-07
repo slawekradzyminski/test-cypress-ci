@@ -26,21 +26,26 @@ jobs:
       - name: Run Cypress tests
         run: npx cypress run --browser chrome
       - name: Generate Allure report
+        if: always()
         run: npx allure generate --single-file
       - name: Checkout gh-pages branch
         uses: actions/checkout@v4
+        if: always()
         with:
           ref: 'gh-pages'
           path: 'gh-pages'
       - name: Clear old reports
+        if: always()
         run: |
           cd gh-pages
           git rm -rf .
           git clean -fxd
       - name: Copy report to gh-pages
+        if: always()
         run: |
           cp -r allure-report/* gh-pages/
       - name: Commit and push
+        if: always()
         run: |
           cd gh-pages
           git config user.name github-actions
