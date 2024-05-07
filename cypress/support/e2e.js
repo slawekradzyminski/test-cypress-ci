@@ -1,4 +1,5 @@
 import './commands'
+import 'allure-cypress/commands';
 
 // This will run before all tests in the project
 beforeEach(() => {

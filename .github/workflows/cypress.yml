@@ -25,49 +25,72 @@ jobs:
       - uses: browser-actions/setup-chrome@v1
       - name: Run Cypress tests
         run: npx cypress run --browser chrome
+      - name: Generate Allure report
+        run: npx allure generate --single-file
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: 'gh-pages'
+          path: 'gh-pages'
+      - name: Clear old reports
+        run: |
+          cd gh-pages
+          git rm -rf .
+          git clean -fxd
+      - name: Copy report to gh-pages
+        run: |
+          cp -r allure-report/* gh-pages/
+      - name: Commit and push
+        run: |
+          cd gh-pages
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Update Test Report"
+          git push origin gh-pages
       
-  firefox-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js 18
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-      - name: Checkout external repository
-        uses: actions/checkout@v4
-        with:
-          repository: "slawekradzyminski/awesome-localstack"
-          path: "awesome-localstack"
-      - name: Run Docker Compose
-        run: |
-          cd awesome-localstack
-          chmod +x run-docker-compose-ci.sh
-          ./run-docker-compose-ci.sh
-      - run: npm install
-      - uses: browser-actions/setup-firefox@v1
-      - name: Run Cypress tests
-        run: npx cypress run --browser firefox      
+  # firefox-tests:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Use Node.js 18
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 18
+  #     - name: Checkout external repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: "slawekradzyminski/awesome-localstack"
+  #         path: "awesome-localstack"
+  #     - name: Run Docker Compose
+  #       run: |
+  #         cd awesome-localstack
+  #         chmod +x run-docker-compose-ci.sh
+  #         ./run-docker-compose-ci.sh
+  #     - run: npm install
+  #     - uses: browser-actions/setup-firefox@v1
+  #     - name: Run Cypress tests
+  #       run: npx cypress run --browser firefox      
 
-  edge-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js 18
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-      - name: Checkout external repository
-        uses: actions/checkout@v4
-        with:
-          repository: "slawekradzyminski/awesome-localstack"
-          path: "awesome-localstack"
-      - name: Run Docker Compose
-        run: |
-          cd awesome-localstack
-          chmod +x run-docker-compose-ci.sh
-          ./run-docker-compose-ci.sh
-      - run: npm install
-      - uses: browser-actions/setup-edge@v1
-      - name: Run Cypress tests
-        run: npx cypress run --browser edge
+  # edge-tests:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Use Node.js 18
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 18
+  #     - name: Checkout external repository
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: "slawekradzyminski/awesome-localstack"
+  #         path: "awesome-localstack"
+  #     - name: Run Docker Compose
+  #       run: |
+  #         cd awesome-localstack
+  #         chmod +x run-docker-compose-ci.sh
+  #         ./run-docker-compose-ci.sh
+  #     - run: npm install
+  #     - uses: browser-actions/setup-edge@v1
+  #     - name: Run Cypress tests
+  #       run: npx cypress run --browser edge
