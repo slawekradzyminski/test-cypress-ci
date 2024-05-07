@@ -1,8 +1,10 @@
 /// <reference types="cypress" />
 
+import { alerts } from "../../components/alerts"
 import { getFakeLoginResponse } from "../../generators/userGenerator"
 import { getUsersMocks } from "../../mocks/getUsers"
 import { loginMocks } from "../../mocks/postSignIn"
+import { loginPage } from "../../pages/loginPage"
 
 describe('Login tests in isolation', () => {
     beforeEach(() => {
@@ -10,26 +12,28 @@ describe('Login tests in isolation', () => {
     })
 
     it('should successfully login', () => {
+        // given
         const fakeLoginResponse = getFakeLoginResponse()
         loginMocks.mockSuccess(fakeLoginResponse)
         getUsersMocks.mockUsers()
 
-        cy.get('[name=username]').type(fakeLoginResponse.username)
-        cy.get('[name=password]').type('password')
-        cy.get('.btn-primary').click()
+        // when
+        loginPage.attemptLogin(fakeLoginResponse.username, 'correct')
 
+        // then
         cy.get('h1').should('contain.text', fakeLoginResponse.firstName)
     })
 
     it('should fail to login', () => {
+        // given
         const message = "Invalid username/password supplied"
         loginMocks.mockFailure(message)
 
-        cy.get('[name=username]').type('wrong')
-        cy.get('[name=password]').type('password')
-        cy.get('.btn-primary').click()
+        // when
+        loginPage.attemptLogin("wrong", "wrong")
 
-        cy.get('.alert-danger').should('have.text', message)
+        // then
+        alerts.verifyFailure(message)
     })
 
 })
