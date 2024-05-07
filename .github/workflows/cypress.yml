@@ -25,7 +25,10 @@ jobs:
           chmod +x run-docker-compose-ci.sh
           ./run-docker-compose-ci.sh
       - run: npm install
+      - name: Set Browser Setup Action
+        id: setup-browser
+        run: echo "BROWSER_SETUP=browser-actions/setup-${{ matrix.browser }}@v1" >> $GITHUB_ENV
       - name: Setup Browser
-        uses: browser-actions/setup-${{ matrix.browser }}@v1
+        uses: ${{ env.BROWSER_SETUP }}
       - name: Run Cypress tests
         run: npx cypress run --browser ${{ matrix.browser }}
