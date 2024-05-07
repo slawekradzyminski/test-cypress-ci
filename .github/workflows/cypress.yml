@@ -12,4 +12,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+      - name: Checkout external repository
+        uses: actions/checkout@v4
+        with:
+          repository: "slawekradzyminski/awesome-localstack"
+          path: "awesome-localstack"
+      - name: Run Docker Compose
+        run: |
+          cd awesome-localstack
+          chmod +x run-docker-compose-ci.sh
+          ./run-docker-compose-ci.sh
       - run: npm install
+      - uses: browser-actions/setup-chrome@v1
+      - name: Run Cypress tests
+        run: npx cypress run --browser chrome
