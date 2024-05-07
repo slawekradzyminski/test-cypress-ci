@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 
 import { getRandomUser } from "../../generators/userGenerator"
+import { registerMocks } from "../../mocks/postSignUp"
 
 describe('Register tests in isolation', () => {
     beforeEach(() => {
@@ -9,14 +10,7 @@ describe('Register tests in isolation', () => {
 
     it('should successfully register', () => {
         const user = getRandomUser()
-        cy.intercept('POST', '**/users/signup', (req) => {
-            req.reply({
-                statusCode: 201,
-                body: {
-                    token: 'fakeToken'
-                }
-            })
-        })
+        registerMocks.mockSuccess()
         cy.get('[name=username]').type(user.username)
         cy.get('[name=password]').type(user.password)
         cy.get('[name=firstName]').type(user.firstName)
