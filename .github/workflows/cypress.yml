@@ -3,11 +3,8 @@ name: Cypress training CI
 on: push
 
 jobs:
-  browser-tests:
+  chrome-tests:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser: [chrome, firefox, edge]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js 18
@@ -25,10 +22,52 @@ jobs:
           chmod +x run-docker-compose-ci.sh
           ./run-docker-compose-ci.sh
       - run: npm install
-      - name: Set Browser Setup Action
-        id: setup-browser
-        run: echo "BROWSER_SETUP=browser-actions/setup-${{ matrix.browser }}@v1" >> $GITHUB_ENV
-      - name: Setup Browser
-        uses: ${{ env.BROWSER_SETUP }}
+      - uses: browser-actions/setup-chrome@v1
       - name: Run Cypress tests
-        run: npx cypress run --browser ${{ matrix.browser }}
+        run: npx cypress run --browser chrome
+      
+  firefox-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Checkout external repository
+        uses: actions/checkout@v4
+        with:
+          repository: "slawekradzyminski/awesome-localstack"
+          path: "awesome-localstack"
+      - name: Run Docker Compose
+        run: |
+          cd awesome-localstack
+          chmod +x run-docker-compose-ci.sh
+          ./run-docker-compose-ci.sh
+      - run: npm install
+      - uses: browser-actions/setup-firefox@v1
+      - name: Run Cypress tests
+        run: npx cypress run --browser firefox      
+
+  edge-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Checkout external repository
+        uses: actions/checkout@v4
+        with:
+          repository: "slawekradzyminski/awesome-localstack"
+          path: "awesome-localstack"
+      - name: Run Docker Compose
+        run: |
+          cd awesome-localstack
+          chmod +x run-docker-compose-ci.sh
+          ./run-docker-compose-ci.sh
+      - run: npm install
+      - uses: browser-actions/setup-edge@v1
+      - name: Run Cypress tests
+        run: npx cypress run --browser edge
